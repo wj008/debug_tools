@@ -116,7 +116,7 @@ client_tcp=127.0.0.1:8000
 ```$ ./debug_tool -c```
 
 
-![Image text](https://raw.githubusercontent.com/wj008/debug_tools/main/img/QQ20201202-1.png)
+![Image text](https://github.com/wj008/debug_tools/raw/main/img/QQ20201202-1.png)
 
 
 当然 也可以直接在本地调试：
@@ -138,4 +138,4 @@ client_tcp=127.0.0.1:8000
 
 ```$ ./debug_tool```
 
-![Image text](https://raw.githubusercontent.com/wj008/debug_tools/main/img/QQ20201202-0.png)
+![Image text](https://github.com/wj008/debug_tools/raw/main/img/QQ20201202-0.png)
