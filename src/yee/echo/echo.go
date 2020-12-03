@@ -157,6 +157,7 @@ func Print(bytes []byte, runType int) {
 			switch tempMap["file"].(type) {
 			case string:
 				tFile = tempMap["file"].(string)
+				break
 			}
 			if tFile != "" && tempFile != tFile {
 				file = tFile

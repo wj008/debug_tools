@@ -107,15 +107,15 @@ func UdpServer(addr string) {
 		panic(err)
 	}
 	defer client.Close()
+	data := make([]byte, 1024*1024)
 	for {
-		data := make([]byte, 1024*1024)
 		n, err := client.Read(data)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 		temp := data[0:n]
-		go Broadcast(temp)
+		Broadcast(temp)
 	}
 }
 
@@ -178,6 +178,7 @@ func TcpClient(addr string) {
 		log.Println("client exit:" + err.Error())
 		return
 	}
+
 	log.Printf("New connection from %v", conn.RemoteAddr())
 	//发送登录密码
 	password := config.String("password", "")
@@ -185,13 +186,14 @@ func TcpClient(addr string) {
 		log.Printf("client quit:" + err.Error())
 		return
 	}
+
 	//发生心跳
 	go func() {
 		for {
 			if err = conn.WriteMsg(nil, 1); err != nil {
 				break
 			}
-			time.Sleep(10 * time.Second)
+			time.Sleep(30 * time.Second)
 		}
 	}()
 	for {
