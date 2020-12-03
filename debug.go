@@ -39,7 +39,7 @@ func main() {
 		MaxCount := config.Int("server_max_count", 0)
 		MaxError := config.Int("server_max_error", 10000)
 		//创建一个Daemon对象
-		d := xdaemon.NewDaemon("")
+		d := xdaemon.NewDaemon("server.log")
 		//调整一些运行参数(可选)
 		d.MaxCount = MaxCount //最大重启次数
 		d.MaxError = MaxError
@@ -199,6 +199,7 @@ func TcpClient(addr string) {
 	for {
 		rawMsg, typ, err := conn.ReadMsg()
 		if err != nil {
+			log.Println(err)
 			conn.Close()
 			return
 		}

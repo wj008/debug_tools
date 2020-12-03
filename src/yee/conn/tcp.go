@@ -86,6 +86,7 @@ func (c *TcpConn) ReadMsg() (buffer []byte, typ int16, err error) {
 		return
 	}
 	if int32(n) != sz {
+		log.Println(string(buffer))
 		err = errors.New(fmt.Sprintf("Expected to read %d bytes, but only read %d", sz, n))
 		return
 	}
@@ -111,7 +112,7 @@ func (c *TcpConn) WriteMsg(buffer []byte, typ int16) (err error) {
 	if l == 0 {
 		return
 	}
-
+	//c.SetWriteDeadline(time.Time{})
 	if _, err = c.Write(buffer); err != nil {
 		return
 	}
