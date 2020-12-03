@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"time"
 )
 
 type TcpConn struct {
@@ -67,7 +68,7 @@ func (c *TcpConn) Close() (err error) {
 /**
 读取消息
 */
-func (c *TcpConn) ReadMsg() (buffer []byte, typ int16, err error) {
+func (c *TcpConn) ReadMsg() (buffer []byte, typ int32, err error) {
 	var sz int32
 	err = binary.Read(c, binary.LittleEndian, &typ)
 	if err != nil {
@@ -86,7 +87,6 @@ func (c *TcpConn) ReadMsg() (buffer []byte, typ int16, err error) {
 		return
 	}
 	if int32(n) != sz {
-		log.Println(string(buffer))
 		err = errors.New(fmt.Sprintf("Expected to read %d bytes, but only read %d", sz, n))
 		return
 	}
@@ -96,7 +96,7 @@ func (c *TcpConn) ReadMsg() (buffer []byte, typ int16, err error) {
 /**
 写入消息
 */
-func (c *TcpConn) WriteMsg(buffer []byte, typ int16) (err error) {
+func (c *TcpConn) WriteMsg(buffer []byte, typ int32) (err error) {
 	err = binary.Write(c, binary.LittleEndian, typ)
 	if err != nil {
 		return
@@ -112,7 +112,7 @@ func (c *TcpConn) WriteMsg(buffer []byte, typ int16) (err error) {
 	if l == 0 {
 		return
 	}
-	//c.SetWriteDeadline(time.Time{})
+	c.SetWriteDeadline(time.Time{})
 	if _, err = c.Write(buffer); err != nil {
 		return
 	}
