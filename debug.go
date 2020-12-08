@@ -115,6 +115,7 @@ func UdpServer(addr string) {
 			continue
 		}
 		temp := data[0:n]
+		log.Println(string(temp))
 		Broadcast(temp)
 	}
 }
@@ -173,16 +174,16 @@ func onConnect(client *conn.TcpConn) {
 }
 
 func TcpClient(addr string) {
-	conn, err := conn.TcpDial(addr)
+	client, err := conn.TcpDial(addr)
 	if err != nil {
 		log.Println("client exit:" + err.Error())
 		return
 	}
 
-	log.Printf("New connection from %v", conn.RemoteAddr())
+	log.Printf("New connection from %v", client.RemoteAddr())
 	//发送登录密码
 	password := config.String("password", "")
-	if err = conn.WriteMsg([]byte(password), 3); err != nil {
+	if err = client.WriteMsg([]byte(password), 3); err != nil {
 		log.Printf("client quit:" + err.Error())
 		return
 	}
@@ -190,17 +191,17 @@ func TcpClient(addr string) {
 	//发生心跳
 	go func() {
 		for {
-			if err = conn.WriteMsg(nil, 1); err != nil {
+			if err = client.WriteMsg(nil, 1); err != nil {
 				break
 			}
 			time.Sleep(30 * time.Second)
 		}
 	}()
 	for {
-		rawMsg, typ, err := conn.ReadMsg()
+		rawMsg, typ, err := client.ReadMsg()
 		if err != nil {
 			log.Println(err)
-			conn.Close()
+			client.Close()
 			return
 		}
 		//心跳包

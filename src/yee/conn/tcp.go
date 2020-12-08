@@ -69,26 +69,43 @@ func (c *TcpConn) Close() (err error) {
 读取消息
 */
 func (c *TcpConn) ReadMsg() (buffer []byte, typ int32, err error) {
-	var sz int32
 	err = binary.Read(c, binary.LittleEndian, &typ)
 	if err != nil {
 		return
 	}
+	var sz int32
 	err = binary.Read(c, binary.LittleEndian, &sz)
 	if err != nil {
 		return
 	}
-	buffer = make([]byte, sz)
-	if sz == 0 {
+	iz := int(sz)
+	if iz == 0 {
+		buffer = make([]byte, 0)
 		return
 	}
-	n, err := c.Read(buffer)
-	if err != nil {
-		return
-	}
-	if int32(n) != sz {
-		err = errors.New(fmt.Sprintf("Expected to read %d bytes, but only read %d", sz, n))
-		return
+	buffer = make([]byte, iz)
+	temp := buffer[0:iz]
+	retry := 0
+	nLen := 0
+	for {
+		retry++
+		if retry > 1000 {
+			err = errors.New(fmt.Sprintf("Expected to read %d bytes, but only read %d", sz, nLen))
+			return
+		}
+		n, err1 := c.Read(temp)
+		if err1 != nil {
+			err = err1
+			return
+		}
+		nLen += n
+		if n < iz {
+			temp = buffer[n:iz]
+			iz = iz - n
+			continue
+		} else {
+			break
+		}
 	}
 	return
 }
